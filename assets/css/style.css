@@ -518,8 +518,9 @@ figure { margin: 0; }
   font-size: var(--fs-sm); font-weight: 600; border-inline-start: 3px solid var(--gold);
   opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity 0.4s, transform 0.5s var(--ease-cine);
 }
+.mobile-bar__row { display: flex; gap: 1rem; }
 .toast.is-on { opacity: 1; transform: none; }
-
+#sheet-toggle{ padding: 8px; }
 .mobile-bar { display: none; }
 
 /* ---------- 18. Checkout ---------- */

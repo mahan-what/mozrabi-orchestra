@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>انتخاب صندلی — ارکستر مضرابی اصفهان</title>
+  <meta name="description" content="صندلی موردنظر خود را در پلان تالار انتخاب کنید.">
+  <meta name="theme-color" content="#0B0A08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-page="booking" data-header="solid">
+  <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+  <header id="site-header"></header>
+
+  <main id="main">
+    <section class="booking-head">
+      <div class="container">
+        <h1>انتخاب صندلی</h1>
+        <p>صندلی موردنظر خود را انتخاب کنید.</p>
+        <div class="booking-info">
+          <span>اجرا: <b data-bind="title">شب موسیقی ایرانی</b></span>
+          <span>تاریخ: <b class="num" data-bind="date">۲۵ مهر ۱۴۰۵</b></span>
+          <span>ساعت: <b class="num" data-bind="time">۲۰:۳۰</b></span>
+          <span>محل: <b data-bind="venue">تالار هنر اصفهان</b></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container booking-layout">
+      <!-- Seat map -->
+      <section class="hall" aria-label="پلان تالار">
+        <div class="hall__tools">
+          <ul class="legend" aria-label="راهنمای وضعیت صندلی‌ها">
+            <li><span class="swatch" aria-hidden="true"></span> ○ آزاد</li>
+            <li><span class="swatch swatch--sel" aria-hidden="true"></span> ● انتخاب شده</li>
+            <li><span class="swatch swatch--sold" aria-hidden="true">×</span> × فروخته شده</li>
+          </ul>
+          <div class="zoom" role="group" aria-label="بزرگ‌نمایی پلان">
+            <button type="button" data-zoom="out" aria-label="کوچک‌نمایی">−</button>
+            <button type="button" data-zoom="in" aria-label="بزرگ‌نمایی">+</button>
+          </div>
+        </div>
+
+        <div class="hall__scroll" tabindex="0" aria-label="پلان تالار — برای دیدن همه‌ی صندلی‌ها به طرفین بکشید">
+          <div class="hall__plan" id="seat-plan">
+            <div class="stage" aria-hidden="true">
+              <div class="stage__label">صحنه</div>
+              <div class="stage__bar"></div>
+              <div class="stage__glow"></div>
+            </div>
+            <div class="seat-rows" id="seat-rows"></div>
+          </div>
+        </div>
+        <div class="tier-key" id="tier-key"></div>
+      </section>
+
+      <!-- Summary -->
+      <aside class="summary" aria-labelledby="sum-title">
+        <h2 id="sum-title">خلاصه رزرو</h2>
+        <dl>
+          <div><dt>اجرا</dt><dd data-bind="title">شب موسیقی ایرانی</dd></div>
+          <div><dt>تاریخ</dt><dd class="num" data-bind="date">۲۵ مهر ۱۴۰۵</dd></div>
+          <div><dt>ساعت</dt><dd class="num" data-bind="time">۲۰:۳۰</dd></div>
+        </dl>
+        <div class="summary__label"><span>صندلی‌های انتخاب‌شده</span><span class="num" id="chosen-count">۰ از ۶</span></div>
+        <ul class="chosen" id="chosen" aria-live="polite"></ul>
+        <div class="sum-lines" id="sum-lines" hidden></div>
+        <div class="total"><span>جمع</span><strong class="num" id="total">۰ تومان</strong></div>
+        <button type="button" class="btn btn--solid btn--primary-desktop" id="continue" disabled>ادامه رزرو</button>
+        <p class="summary__note">حداکثر ۶ صندلی در هر رزرو · این نسخه نمایشی است و پرداخت واقعی ندارد.</p>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Mobile sticky summary -->
+  <div class="mobile-bar" role="region" aria-label="خلاصه‌ی رزرو">
+    <div class="mobile-bar__info"><small id="bar-count">صندلی انتخاب نشده</small><strong class="num" id="bar-total">۰ تومان</strong></div>
+    <button type="button" class="btn btn--solid" id="bar-continue" disabled>ادامه رزرو</button>
+  </div>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/booking.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اطلاعات رزرو — ارکستر مضرابی اصفهان</title>
+  <meta name="theme-color" content="#0B0A08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/states.css">
+</head>
+<body class="theme-light" data-page="booking" data-header="solid">
+  <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+  <header id="site-header"></header>
+
+  <main id="main" class="container" style="padding-top:calc(var(--header-h) + 2.5rem)">
+    <div id="checkout-notice" class="notice" role="alert" hidden></div>
+    <div id="checkout-empty" class="empty-state" hidden style="color:var(--text-on-light)">
+      <h2>هنوز صندلی‌ای انتخاب نشده است</h2>
+      <p style="color:var(--text-muted-light)">برای ادامه، ابتدا صندلی‌های خود را در پلان تالار انتخاب کنید.</p>
+      <a class="btn btn--dark" href="booking.html">انتخاب صندلی</a>
+    </div>
+
+    <div id="checkout-main">
+      <ol class="steps" aria-label="مراحل رزرو" style="list-style:none;padding:0;margin:0 0 0">
+        <li class="is-done">۱. انتخاب صندلی</li>
+        <li class="is-now" aria-current="step">۲. اطلاعات رزرو</li>
+        <li>۳. بلیت دیجیتال</li>
+      </ol>
+
+      <div class="checkout">
+        <section class="panel-light" aria-labelledby="co-title">
+          <h2 id="co-title">اطلاعات رزرو</h2>
+          <p>لطفاً اطلاعات خریدار را وارد کنید تا بلیت به نام شما صادر شود.</p>
+          <form id="checkout-form" novalidate>
+            <div class="form-error" role="alert" tabindex="-1" data-form-error></div>
+            <div class="field">
+              <label for="name">نام و نام خانوادگی</label>
+              <input id="name" name="name" type="text" autocomplete="name" required data-validate="text" aria-describedby="name-err">
+              <div class="field__err" id="name-err">لطفاً نام و نام خانوادگی را وارد کنید.</div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="mobile">شماره موبایل</label>
+                <input id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required data-validate="mobile" aria-describedby="mobile-err" dir="ltr" style="text-align:right">
+                <div class="field__err" id="mobile-err">شماره موبایل معتبر نیست.</div>
+              </div>
+              <div class="field">
+                <label for="email">ایمیل <small>(اختیاری)</small></label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" data-validate="email" aria-describedby="email-err" dir="ltr" style="text-align:right">
+                <div class="field__err" id="email-err">ایمیل معتبر نیست.</div>
+              </div>
+            </div>
+            <label class="check"><input id="terms" type="checkbox" required data-validate="text"> <span>قوانین و شرایط رزرو بلیت را می‌پذیرم.</span></label>
+            <button type="submit" class="btn btn--dark btn--lg" style="width:100%">پرداخت</button>
+            <p class="demo-note" data-demo-note hidden>درگاه پرداخت آزمایشی است؛ هیچ پرداخت واقعی انجام نمی‌شود.</p>
+          </form>
+        </section>
+
+        <aside class="order" aria-labelledby="order-title">
+          <h2 id="order-title">خلاصه سفارش</h2>
+          <dl>
+            <div><dt>اجرا</dt><dd data-bind="title">—</dd></div>
+            <div><dt>تاریخ</dt><dd class="num" data-bind="date">—</dd></div>
+            <div><dt>ساعت</dt><dd class="num" data-bind="time">—</dd></div>
+            <div><dt>محل</dt><dd data-bind="venue">—</dd></div>
+          </dl>
+          <ul id="order-seats"></ul>
+          <dl>
+            <div><dt>تعداد</dt><dd class="num" id="order-count">—</dd></div>
+            <div style="padding-top:.8rem"><dt>مبلغ قابل پرداخت</dt><dd class="num" id="order-total" style="color:var(--gold-2);font-size:1.4rem;font-weight:800">—</dd></div>
+          </dl>
+          <p class="countdown" id="countdown" aria-live="off"></p>
+          <p style="margin:1.4rem 0 0;font-size:var(--fs-xs)"><a class="link-arrow" href="booking.html" data-edit-seats>ویرایش صندلی‌ها</a></p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/booking.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
+
+// The connection string comes from the environment (.env) — never from source code.
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: { path: "prisma/migrations" },
+  datasource: {
+    url: process.env.DATABASE_URL ?? "postgresql://user:password@localhost:5432/mozrabi",
+  },
+});

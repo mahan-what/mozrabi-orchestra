@@ -1,0 +1,348 @@
+// ============================================================================
+// ارکستر مضرابی اصفهان — Prisma schema (PostgreSQL)
+//
+// Design rules
+//  * Nothing that a reservation / payment / ticket depends on can be deleted:
+//    all those relations are ON DELETE RESTRICT. Concerts are archived
+//    (archivedAt) or cancelled, never hard-deleted once they have history.
+//  * Seat availability lives ONLY in the database (ConcertSeat). The browser
+//    never decides it. A seat is taken with one atomic conditional UPDATE.
+//  * Prices are stored on PriceTier; a reservation snapshots the price of every
+//    seat in ReservationItem.price, so later price edits never change old orders.
+//  * Everything Prisma cannot express (CHECK constraints, partial unique
+//    indexes) is in prisma/migrations/*_integrity_constraints/migration.sql.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ConcertStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum SeatStatus {
+  AVAILABLE
+  HELD
+  SOLD
+  BLOCKED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUND_REQUIRED
+  REFUNDED
+}
+
+enum TicketStatus {
+  VALID
+  USED
+  CANCELLED
+}
+
+// ---------------------------------------------------------------- accounts --
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  name             String
+  mobile           String    @unique // normalised: 09XXXXXXXXX
+  email            String?   @unique // normalised: lower-case
+  passwordHash     String // scrypt$N$r$p$salt$hash — never the password
+  role             Role      @default(USER)
+  isActive         Boolean   @default(true)
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime? @db.Timestamptz(3)
+  lastLoginAt      DateTime? @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @db.Timestamptz(3)
+
+  sessions     Session[]
+  reservations Reservation[]
+  // NOTE: no national-ID column on purpose (data minimisation: we do not need it).
+}
+
+model Session {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  tokenHash  String    @unique // sha256 of the cookie token; the token itself is never stored
+  expiresAt  DateTime  @db.Timestamptz(3)
+  revokedAt  DateTime? @db.Timestamptz(3)
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  lastUsedAt DateTime? @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// ------------------------------------------------------------------- venue --
+
+model Venue {
+  id        Int      @id @default(autoincrement())
+  name      String
+  city      String
+  address   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  seats    Seat[]
+  concerts Concert[]
+}
+
+/// Physical seat of a venue (the template / "seat map"). Per-concert state is in ConcertSeat.
+model Seat {
+  id       Int    @id @default(autoincrement())
+  venueId  Int
+  rowLabel String
+  rowOrder Int
+  number   Int
+
+  venue       Venue         @relation(fields: [venueId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  concertSeats ConcertSeat[]
+
+  @@unique([venueId, rowLabel, number])
+  @@index([venueId, rowOrder, number])
+}
+
+// ---------------------------------------------------------------- concerts --
+
+model Concert {
+  id                     Int           @id @default(autoincrement())
+  title                  String
+  summary                String
+  description            String        @db.Text // paragraphs separated by a blank line
+  program                Json          @default("[]") // [{ part, items: [{ title, note }] }]
+  venueId                Int
+  startsAt               DateTime      @db.Timestamptz(3)
+  durationMinutes        Int
+  status                 ConcertStatus @default(DRAFT)
+  maxSeatsPerReservation Int           @default(6)
+  coverImageUrl          String?
+  archivedAt             DateTime?     @db.Timestamptz(3)
+  createdAt              DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime      @updatedAt @db.Timestamptz(3)
+
+  venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  tiers        PriceTier[]
+  seats        ConcertSeat[]
+  reservations Reservation[]
+
+  @@index([status, startsAt])
+  @@index([venueId])
+}
+
+model PriceTier {
+  id        Int      @id @default(autoincrement())
+  concertId Int
+  name      String
+  amount    Int // Toman, > 0 (CHECK in migration)
+  rows      String[] // row labels this tier covers; used when seats are generated
+  sortOrder Int      @default(0)
+
+  concert Concert       @relation(fields: [concertId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  seats   ConcertSeat[]
+
+  @@index([concertId, sortOrder])
+}
+
+/// The lock row of one seat for one concert. Exactly one row per (concert, seat).
+model ConcertSeat {
+  id            Int        @id @default(autoincrement())
+  concertId     Int
+  seatId        Int
+  tierId        Int
+  status        SeatStatus @default(AVAILABLE)
+  reservationId String?    @db.Uuid
+  heldUntil     DateTime?  @db.Timestamptz(3)
+  updatedAt     DateTime   @updatedAt @db.Timestamptz(3)
+
+  concert     Concert           @relation(fields: [concertId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  seat        Seat              @relation(fields: [seatId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  tier        PriceTier         @relation(fields: [tierId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  reservation Reservation?      @relation("SeatHolder", fields: [reservationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  items       ReservationItem[]
+
+  @@unique([concertId, seatId])
+  @@index([concertId, status])
+  @@index([reservationId])
+  @@index([status, heldUntil])
+}
+
+// ------------------------------------------------------------ reservations --
+
+model Reservation {
+  id             String            @id @default(uuid()) @db.Uuid
+  userId         String            @db.Uuid
+  concertId      Int
+  status         ReservationStatus @default(PENDING)
+  totalAmount    Int // computed on the server from ReservationItem.price
+  currency       String            @default("IRT")
+  expiresAt      DateTime          @db.Timestamptz(3)
+  contactName    String?
+  contactMobile  String?
+  contactEmail   String?
+  idempotencyKey String?
+  confirmedAt    DateTime?         @db.Timestamptz(3)
+  cancelledAt    DateTime?         @db.Timestamptz(3)
+  cancelReason   String?
+  createdAt      DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime          @updatedAt @db.Timestamptz(3)
+
+  user      User              @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  concert   Concert           @relation(fields: [concertId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  items     ReservationItem[]
+  payments  Payment[]
+  tickets   Ticket[]
+  heldSeats ConcertSeat[]     @relation("SeatHolder")
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@index([concertId, status])
+  @@index([status, expiresAt])
+}
+
+model ReservationItem {
+  id            Int    @id @default(autoincrement())
+  reservationId String @db.Uuid
+  concertSeatId Int
+  price         Int // snapshot of the tier price at hold time
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  concertSeat ConcertSeat @relation(fields: [concertSeatId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([reservationId, concertSeatId])
+  @@index([concertSeatId])
+}
+
+// ---------------------------------------------------------------- payments --
+
+model Payment {
+  id            String        @id @default(uuid()) @db.Uuid
+  reservationId String        @db.Uuid
+  provider      String
+  status        PaymentStatus @default(INITIATED)
+  amount        Int // copied from Reservation.totalAmount at initiation; verified against the gateway
+  currency      String        @default("IRT")
+  authority     String? // reference issued by the gateway at initiation
+  trackingCode  String? // receipt / ref id returned by the gateway after verification
+  failureReason String?
+  initiatedAt   DateTime      @default(now()) @db.Timestamptz(3)
+  verifiedAt    DateTime?     @db.Timestamptz(3)
+  createdAt     DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
+  // NOTE: no card number / CVV / PAN column exists, by design.
+
+  reservation Reservation    @relation(fields: [reservationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  events      PaymentEvent[]
+
+  @@unique([provider, authority])
+  @@index([reservationId, status])
+}
+
+/// Append-only audit trail of everything that happened to a payment.
+model PaymentEvent {
+  id        Int      @id @default(autoincrement())
+  paymentId String   @db.Uuid
+  type      String
+  payload   Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([paymentId, createdAt])
+}
+
+model Ticket {
+  id            String       @id @default(uuid()) @db.Uuid
+  serial        Int          @unique @default(autoincrement())
+  reservationId String       @db.Uuid
+  concertSeatId Int
+  holderName    String
+  status        TicketStatus @default(VALID)
+  usedAt        DateTime?    @db.Timestamptz(3)
+  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([reservationId])
+  @@index([concertSeatId])
+}
+
+// ----------------------------------------------------------------- content --
+
+model Member {
+  id        Int      @id @default(autoincrement())
+  name      String
+  title     String
+  bio       String?  @db.Text
+  imageUrl  String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([isActive, sortOrder])
+}
+
+model Instrument {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique // slug, also selects the line-art drawing in the frontend (tar, santur…)
+  name        String
+  description String
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([isActive, sortOrder])
+}
+
+model GalleryItem {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([isPublished, sortOrder])
+}
+
+model ContactMessage {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  message   String    @db.Text
+  handledAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
+}

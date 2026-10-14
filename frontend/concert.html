@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اجرا — ارکستر مضرابی اصفهان</title>
+  <meta name="description" content="جزئیات اجرا، برنامه‌ی قطعات و رزرو بلیت.">
+  <meta name="theme-color" content="#0B0A08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/states.css">
+</head>
+<body data-page="concerts">
+  <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+  <header id="site-header"></header>
+
+  <main id="main" data-concert-detail>
+    <div class="container" data-concert-state style="padding-top:calc(var(--header-h) + 2rem)"></div>
+    <section class="page-hero page-hero--sm" data-concert-section hidden>
+      <div class="ph" data-tone="4" role="img" aria-label="تصویر اجرا"></div>
+      <div class="container">
+        <nav class="crumbs" aria-label="مسیر صفحه"><a href="index.html">خانه</a><span aria-hidden="true">/</span><a href="concerts.html">اجراها</a><span aria-hidden="true">/</span><span data-bind="title"></span></nav>
+        <h1 data-bind="title"></h1>
+        <div class="info-strip">
+          <div><small>تاریخ</small><strong class="num" data-bind="date"></strong></div>
+          <div><small>ساعت</small><strong class="num" data-bind="time"></strong></div>
+          <div><small>محل</small><strong data-bind="venue"></strong></div>
+          <div><small>مدت اجرا</small><strong class="num" data-bind="duration"></strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-concert-section hidden>
+      <div class="container detail-grid">
+        <div>
+          <div class="reveal">
+            <h2>درباره این اجرا</h2>
+            <div class="lead" data-about></div>
+          </div>
+          <div class="rule" aria-hidden="true"><i></i></div>
+          <h2 style="margin-bottom:2rem">برنامه اجرا</h2>
+          <div data-program></div>
+        </div>
+        <aside>
+          <div class="side-box reveal" data-hide-past>
+            <h3>قیمت بلیت</h3>
+            <ul class="tiers" data-tiers></ul>
+            <p data-capacity-note style="font-size:var(--fs-xs);color:var(--text-muted-dark);margin:1rem 0 1.4rem">ظرفیت سالن <span class="num" data-bind="capacity">—</span> صندلی است.</p>
+            <a class="btn btn--solid" style="width:100%" href="booking.html" data-book-link>رزرو بلیت</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="cta-band container reveal" data-concert-section data-hide-past hidden>
+      <h2>صندلی خود را همین حالا انتخاب کنید</h2>
+      <a class="btn btn--solid btn--lg" href="booking.html" data-book-link>انتخاب صندلی و رزرو بلیت</a>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

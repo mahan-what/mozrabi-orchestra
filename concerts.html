@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اجراهای ارکستر — ارکستر مضرابی اصفهان</title>
+  <meta name="description" content="اجراهای پیش‌رو و گذشته‌ی ارکستر مضرابی اصفهان و رزرو بلیت.">
+  <meta name="theme-color" content="#0B0A08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-page="concerts">
+  <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+  <header id="site-header"></header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="ph" data-tone="2" role="img" aria-label="تالار اجرا"></div>
+      <div class="container">
+        <nav class="crumbs" aria-label="مسیر صفحه"><a href="index.html">خانه</a><span aria-hidden="true">/</span><span>اجراها</span></nav>
+        <h1>اجراهای ارکستر</h1>
+        <p>اجراهای پیش‌رو و برنامه‌های آینده</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="up-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">برنامه</span>
+          <h2 class="section-title" id="up-title">اجراهای پیش‌رو</h2>
+        </div>
+        <div data-render="concerts-upcoming"></div>
+      </div>
+    </section>
+
+    <section class="section section--light" aria-labelledby="past-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">آرشیو</span>
+          <h2 class="section-title" id="past-title">اجراهای گذشته</h2>
+        </div>
+        <div class="past-grid" data-render="concerts-past"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

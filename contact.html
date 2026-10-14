@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تماس با ما — ارکستر مضرابی اصفهان</title>
+  <meta name="description" content="راه‌های ارتباط با ارکستر مضرابی اصفهان.">
+  <meta name="theme-color" content="#0B0A08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/states.css">
+</head>
+<body data-page="contact">
+  <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+  <header id="site-header"></header>
+
+  <main id="main">
+    <section class="page-hero page-hero--sm">
+      <div class="ph" data-tone="5" role="img" aria-label="سازهای ارکستر"></div>
+      <div class="container">
+        <nav class="crumbs" aria-label="مسیر صفحه"><a href="index.html">خانه</a><span aria-hidden="true">/</span><span>تماس</span></nav>
+        <h1>تماس با ما</h1>
+        <p>پرسش، پیشنهاد یا درخواست همکاری دارید؟ خوشحال می‌شویم بشنویم.</p>
+      </div>
+    </section>
+
+    <section class="section section--light">
+      <div class="container contact-grid">
+        <div class="reveal">
+          <span class="eyebrow">اطلاعات تماس</span>
+          <ul class="contact-list" style="margin-top:1rem">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><div><small>نشانی</small><strong>اصفهان، تالار هنر اصفهان</strong></div></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg><div><small>تلفن</small><strong class="num">۰۳۱-۱۲۳۴۵۶۷۸</strong></div></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="m3 7 9 6 9-6"/></svg><div><small>ایمیل</small><strong>info@mozrabi-orchestra.example</strong></div></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/></svg><div><small>اینستاگرام</small><strong dir="ltr" style="display:inline-block">@mozrabi.orchestra</strong></div></li>
+          </ul>
+        </div>
+
+        <div class="reveal">
+          <span class="eyebrow">ارسال پیام</span>
+          <div class="form-success" role="status" tabindex="-1">پیام شما ثبت شد. به‌زودی بررسی می‌شود.</div>
+          <form id="contact-form" novalidate style="margin-top:1rem">
+            <div class="form-error" role="alert" tabindex="-1" data-form-error></div>
+            <div class="field">
+              <label for="c-name">نام</label>
+              <input id="c-name" type="text" autocomplete="name" required data-validate="text" aria-describedby="c-name-err">
+              <div class="field__err" id="c-name-err">لطفاً نام خود را وارد کنید.</div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="c-email">ایمیل</label>
+                <input id="c-email" type="email" autocomplete="email" required data-validate="email" dir="ltr" style="text-align:right" aria-describedby="c-email-err">
+                <div class="field__err" id="c-email-err">ایمیل معتبر نیست.</div>
+              </div>
+              <div class="field">
+                <label for="c-phone">شماره تماس <small>(اختیاری)</small></label>
+                <input id="c-phone" type="tel" inputmode="tel" autocomplete="tel" data-validate="mobile" dir="ltr" style="text-align:right" aria-describedby="c-phone-err">
+                <div class="field__err" id="c-phone-err">شماره موبایل معتبر نیست.</div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="c-msg">پیام</label>
+              <textarea id="c-msg" rows="5" required data-validate="text" aria-describedby="c-msg-err"></textarea>
+              <div class="field__err" id="c-msg-err">لطفاً پیام خود را بنویسید.</div>
+            </div>
+            <button type="submit" class="btn btn--dark btn--lg">ارسال پیام</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
